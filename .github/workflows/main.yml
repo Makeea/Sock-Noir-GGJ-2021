@@ -30,7 +30,6 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ env.PROJECT_NAME }}/Library
-          path: Library
           key: Library
 
       # - name: Run tests
