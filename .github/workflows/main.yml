@@ -1,0 +1,77 @@
+name: Test and Build
+
+on:
+  # pull_request: {}
+  push:
+    branches:
+      - main
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  UNITY_VERSION: 2020.2.2f1
+  PROJECT_NAME: "Sock Noir"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.build.outputs.buildVersion }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.PROJECT_NAME }}/Library
+          key: Library
+
+      # - name: Run tests
+      #   uses: game-ci/unity-test-runner@v2.0-alpha-2
+      #   with:
+      #     projectPath: ${{ env.PROJECT_NAME }}
+      #     unityVersion: ${{ env.UNITY_VERSION }}
+
+      - name: Build project
+        id: build
+        uses: game-ci/unity-builder@v2.0-alpha-6
+        with:
+          projectPath: ${{ env.PROJECT_NAME }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: StandaloneWindows
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Build
+          path: build
+
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Build
+
+    - name: Zip it
+      run: |
+        mv build $PROJECT_NAME
+        zip $PROJECT_NAME.zip -r $PROJECT_NAME
+
+    - name: Create release with binaries
+      run: |
+        gh release create v$GIT_TAG -t "Release v$GIT_TAG" $PROJECT_NAME.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GIT_TAG: ${{ needs.build.outputs.version }}
