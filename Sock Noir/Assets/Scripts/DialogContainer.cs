@@ -15,7 +15,28 @@ public class DialogContainer : MonoBehaviour
                 "You're looking for your sock-mate? Her name is Kaki? She's the love of your life and you think she might be in danger?! Do you know what she looks like?",
                 "Well, I haven’t seen anything since the dust-up a few hours ago. But you could try beyond yonder. But you better be careful! Closet-dweller’s like your kind go in, but they don’t come out! There are mysterious goings-on there! But go on - if you must!"
             }
-        }
+        },
+        new Dialog{
+            name = "Pedro",
+            sentences = new string[]{
+                "What brings you to this neck of town, mister?",
+                "Ahhh, lost love?",
+                "Could be a bunch of places.",
+                "Talk to Darko. That big ole bunny over by the dryer. He knows everything that goes on out there.",
+                "Check by the dryer. Good luck!",
+            }
+        },
+        new Dialog{
+            name = "Teddy Claw",
+            sentences = new string[]{
+                "What do we have here?",
+                "You were sent? Sent by who?",
+                "I know who, eh? I do, know who...Quick get it! We can’t do this all again! They run away after it. It looks like it blew back the way you came. It’s yours but, be careful what you ask for!",
+                "Shh! Stop interrupting! Now, what do you want?",
+                "You're looking for your sock-mate? Her name is Kaki? She's the love of your life and you think she might be in danger?! Do you know what she looks like?",
+                "Well, I haven’t seen anything since the dust-up a few hours ago. But you could try beyond yonder. But you better be careful! Closet-dweller’s like your kind go in, but they don’t come out! There are mysterious goings-on there! But go on - if you must!"
+            }
+        },
     };
     // public TextAsset json;
     void Start()
