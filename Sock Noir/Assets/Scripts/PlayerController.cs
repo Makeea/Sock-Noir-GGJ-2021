@@ -67,7 +67,7 @@ public class PlayerController : MonoBehaviour
     }
 
     void OnTriggerStay2D(Collider2D collider)
-    {
+    {        
         collider.gameObject.SendMessage("SetInteract", true);
     }
 
