@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCController : ChatterBox
+public class NPCController : MonoBehaviour
 {    
     private SpriteRenderer baseSock;
     private SpriteRenderer hat;
@@ -92,4 +92,3 @@ public class NPCController : ChatterBox
         
     // }
 }
-

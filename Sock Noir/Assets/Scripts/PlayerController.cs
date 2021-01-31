@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        collision.gameObject.SendMessage("SetInteract", true);
         Debug.Log($"trigger entered {collision.tag}");
         switch (collision.tag.ToLower())
         {
@@ -64,11 +65,6 @@ public class PlayerController : MonoBehaviour
     void OnTriggerExit2D(Collider2D collider)
     {
         collider.gameObject.SendMessage("SetInteract", false);
-    }
-
-    void OnTriggerStay2D(Collider2D collider)
-    {        
-        collider.gameObject.SendMessage("SetInteract", true);
     }
 
     private void OnCollisionEnter2D(Collision2D other)
