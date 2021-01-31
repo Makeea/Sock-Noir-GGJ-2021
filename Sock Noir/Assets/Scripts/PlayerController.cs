@@ -5,21 +5,24 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
+
     private Animator animator;    
     private BoxCollider2D collider2D;
     private AudioSource footStep;    
 
     private Vector2 standingPosition;
     private Vector2 crouchingPosition;
+    private int originalExtraJumpCount;
 
     // State Machine
     private enum State { idle = 0, running = 1, jumping = 2, falling = 3, hurt = 4, crouch = 5, crawl = 6 }
     private State state = State.idle;
 
-
     [SerializeField] private LayerMask ground;
     [SerializeField] private float speed = 5f;
-    [SerializeField] private float jumpForce = 10f;
+    [SerializeField] private float jumpForce = 10f;    
+    [SerializeField] private int extraJumpCount = 1;
+    [SerializeField] private ParticleSystem dust;
 
     private void Start()
     {
@@ -30,6 +33,7 @@ public class PlayerController : MonoBehaviour
 
         standingPosition = collider2D.size;
         crouchingPosition = new Vector2(standingPosition.x,standingPosition.y /2 );
+        originalExtraJumpCount = extraJumpCount;
     }
 
     // Update is called once per frame
@@ -47,9 +51,6 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log($"trigger entered {collision.tag}");
         switch (collision.tag.ToLower()){
-            case "something":
-                Something();
-                break;
             case "clue":
                 PickupClue(collision);
                 break;
@@ -61,10 +62,10 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        //Debug.Log($"Collision with {other.gameObject.tag}");
+        Debug.Log($"Collision with {other.gameObject.tag}");
         switch(other.gameObject.tag.ToLower()){
-            case "something":
-                // Do somthing?
+            case "wall":
+                HitWall();
                 break;
             case "checkpoint":
                 // Handle Checkpoint
@@ -102,10 +103,15 @@ public class PlayerController : MonoBehaviour
             transform.localScale = new Vector2(1, 1);            
         }
 
+        if(collider2D.IsTouchingLayers(ground)){
+            extraJumpCount = originalExtraJumpCount;
+        }
+
         //Jumping
-        if (Input.GetButtonDown("Jump") && collider2D.IsTouchingLayers(ground))
+        if (Input.GetButtonDown("Jump") && extraJumpCount > 0)
         {
-            Jump();   
+            Jump();
+            extraJumpCount--;   
         }
 
         //Action
@@ -115,8 +121,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void Something(){
-        // TODO: Future event to go here
+    private void HitWall(){
+        state = State.idle;
     }
 
     private void AnimationState()
@@ -171,5 +177,10 @@ public class PlayerController : MonoBehaviour
     private void PlaySoundFootStep()
     {
         footStep.Play();
+    }
+
+    private void CreateDust()
+    { 
+        dust.Play();
     }
 }
