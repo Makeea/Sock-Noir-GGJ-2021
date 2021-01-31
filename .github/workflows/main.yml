@@ -48,7 +48,7 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: Build
-          path: ${{ env.PROJECT_NAME }}/build
+          path: build
 
 
   publish:
