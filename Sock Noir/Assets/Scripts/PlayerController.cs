@@ -79,28 +79,32 @@ public class PlayerController : MonoBehaviour
     private void Movement(){
         var hDirection = Input.GetAxis("Horizontal");
         var vDirection = Input.GetAxis("Vertical");
+        var isCrouching = vDirection < 0;
+
 
         var xVelocity = speed;
         //Holding Down
-        if((vDirection < 0)){
+        if(isCrouching){
             xVelocity = xVelocity / 2;
             collider2D.size = crouchingPosition;
+            transform.localScale = new Vector2(transform.localScale.x, 0.5f);
         }
         else{
             collider2D.size = standingPosition;
+            transform.localScale = new Vector2(transform.localScale.x, 1);
         }
 
         // Moving Left
         if (hDirection < 0)
         {
             rb.velocity = new Vector2(-xVelocity, rb.velocity.y);
-            transform.localScale = new Vector2(-1, 1);
+            transform.localScale = new Vector2(-1, transform.localScale.y);
         }
         // Moving Right
         else if (hDirection > 0)
         {
             rb.velocity = new Vector2(xVelocity, rb.velocity.y);
-            transform.localScale = new Vector2(1, 1);            
+            transform.localScale = new Vector2(1, transform.localScale.y);            
         }
 
         if(collider2D.IsTouchingLayers(ground)){
@@ -108,7 +112,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //Jumping
-        if (Input.GetButtonDown("Jump") && extraJumpCount > 0)
+        if (Input.GetButtonDown("Jump") && extraJumpCount > 0 && !isCrouching)
         {
             Jump();
             extraJumpCount--;   
