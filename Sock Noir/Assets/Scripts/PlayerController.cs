@@ -6,9 +6,9 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
 
-    private Animator animator;    
+    private Animator animator;
     private BoxCollider2D collider2D;
-    private AudioSource footStep;    
+    private AudioSource footStep;
 
     private Vector2 standingPosition;
     private Vector2 crouchingPosition;
@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private LayerMask ground;
     [SerializeField] private float speed = 5f;
-    [SerializeField] private float jumpForce = 10f;    
+    [SerializeField] private float jumpForce = 10f;
     [SerializeField] private int extraJumpCount = 1;
     [SerializeField] private ParticleSystem dust;
 
@@ -32,14 +32,14 @@ public class PlayerController : MonoBehaviour
         footStep = GetComponent<AudioSource>();
 
         standingPosition = collider2D.size;
-        crouchingPosition = new Vector2(standingPosition.x,standingPosition.y /2 );
+        crouchingPosition = new Vector2(standingPosition.x, standingPosition.y / 2);
         originalExtraJumpCount = extraJumpCount;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if(state != State.hurt)
+        if (state != State.hurt)
         {
             Movement();
         }
@@ -50,7 +50,8 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log($"trigger entered {collision.tag}");
-        switch (collision.tag.ToLower()){
+        switch (collision.tag.ToLower())
+        {
             case "clue":
                 PickupClue(collision);
                 break;
@@ -60,10 +61,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void OnTriggerExit2D(Collider2D collider)
+    {
+        collider.gameObject.SendMessage("SetInteract", false);
+    }
+
+    void OnTriggerStay2D(Collider2D collider)
+    {
+        collider.gameObject.SendMessage("SetInteract", true);
+    }
+
     private void OnCollisionEnter2D(Collision2D other)
     {
         Debug.Log($"Collision with {other.gameObject.tag}");
-        switch(other.gameObject.tag.ToLower()){
+        switch (other.gameObject.tag.ToLower())
+        {
             case "wall":
                 HitWall();
                 break;
@@ -73,10 +85,11 @@ public class PlayerController : MonoBehaviour
             default:
                 //Debug.LogWarning($"Unknown Tag collided {other.gameObject.tag}");
                 break;
-        }        
+        }
     }
 
-    private void Movement(){
+    private void Movement()
+    {
         var hDirection = Input.GetAxis("Horizontal");
         var vDirection = Input.GetAxis("Vertical");
         var isCrouching = vDirection < 0;
@@ -84,12 +97,14 @@ public class PlayerController : MonoBehaviour
 
         var xVelocity = speed;
         //Holding Down
-        if(isCrouching){
+        if (isCrouching)
+        {
             xVelocity = xVelocity / 2;
             collider2D.size = crouchingPosition;
             transform.localScale = new Vector2(transform.localScale.x, 0.5f);
         }
-        else{
+        else
+        {
             collider2D.size = standingPosition;
             transform.localScale = new Vector2(transform.localScale.x, 1);
         }
@@ -104,10 +119,11 @@ public class PlayerController : MonoBehaviour
         else if (hDirection > 0)
         {
             rb.velocity = new Vector2(xVelocity, rb.velocity.y);
-            transform.localScale = new Vector2(1, transform.localScale.y);            
+            transform.localScale = new Vector2(1, transform.localScale.y);
         }
 
-        if(collider2D.IsTouchingLayers(ground)){
+        if (collider2D.IsTouchingLayers(ground))
+        {
             extraJumpCount = originalExtraJumpCount;
         }
 
@@ -115,44 +131,45 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump") && extraJumpCount > 0 && !isCrouching)
         {
             Jump();
-            extraJumpCount--;   
+            extraJumpCount--;
         }
 
         //Action
-        if(Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1"))
         {
             //Debug.Log($"Pressing {Input.g}")
         }
     }
 
-    private void HitWall(){
+    private void HitWall()
+    {
         state = State.idle;
     }
 
     private void AnimationState()
     {
-        if(state == State.jumping)
+        if (state == State.jumping)
         {
-            if(rb.velocity.y < .1f)
+            if (rb.velocity.y < .1f)
             {
                 state = State.falling;
             }
         }
-        else if(state == State.falling)
+        else if (state == State.falling)
         {
             if (collider2D.IsTouchingLayers(ground))
             {
                 state = State.idle;
             }
         }
-        else if(state == State.hurt)
+        else if (state == State.hurt)
         {
-            if(Mathf.Abs(rb.velocity.x) < .1f)
+            if (Mathf.Abs(rb.velocity.x) < .1f)
             {
                 state = State.idle;
             }
         }
-        else if(Mathf.Abs(rb.velocity.x) > 2f)
+        else if (Mathf.Abs(rb.velocity.x) > 2f)
         {
             //Moving
             state = State.running;
@@ -169,13 +186,14 @@ public class PlayerController : MonoBehaviour
         state = State.jumping;
     }
 
-    private void PickupClue(Collider2D collision){    
+    private void PickupClue(Collider2D collision)
+    {
         // Only pick up if button pressed
-        if(Input.GetButtonDown("Fire1")) // Ctrl Left
+        if (Input.GetButtonDown("Fire1")) // Ctrl Left
         {
             Debug.Log($"Picked up {collision.tag}");
             Destroy(collision.gameObject);
-        }        
+        }
     }
 
     private void PlaySoundFootStep()
@@ -184,7 +202,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void CreateDust()
-    { 
+    {
         dust.Play();
     }
 }

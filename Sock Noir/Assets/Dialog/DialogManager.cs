@@ -42,9 +42,9 @@ public class DialogManager : MonoBehaviour
         animator.SetBool("isOpen", false);
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        Debug.Log("DialogManager Started!!");
         sentences = new Queue<string>();
     }
 }
