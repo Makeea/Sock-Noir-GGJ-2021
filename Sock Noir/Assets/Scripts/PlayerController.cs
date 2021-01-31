@@ -6,7 +6,11 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator animator;    
-    private Collider2D collider2D;
+    private BoxCollider2D collider2D;
+    private AudioSource footStep;    
+
+    private Vector2 standingPosition;
+    private Vector2 crouchingPosition;
 
     // State Machine
     private enum State { idle = 0, running = 1, jumping = 2, falling = 3, hurt = 4, crouch = 5, crawl = 6 }
@@ -21,7 +25,11 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        collider2D = GetComponent<Collider2D>();
+        collider2D = GetComponent<BoxCollider2D>();
+        footStep = GetComponent<AudioSource>();
+
+        standingPosition = collider2D.size;
+        crouchingPosition = new Vector2(standingPosition.x,standingPosition.y /2 );
     }
 
     // Update is called once per frame
@@ -31,23 +39,29 @@ public class PlayerController : MonoBehaviour
         {
             Movement();
         }
+        AnimationState();
+        animator.SetInteger("state", (int)state); // sets animation based on enumerator state
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log($"trigger entered {collision.tag}");
         switch (collision.tag.ToLower()){
             case "something":
                 Something();
                 break;
+            case "clue":
+                PickupClue(collision);
+                break;
             default:
-                Debug.LogWarning($"Unknown Tag collided {collision.tag}");
+                Debug.LogWarning($"Unknown Tag collided collision.tag");
                 break;
         }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        Debug.Log($"Collision with {other.gameObject.tag}");
+        //Debug.Log($"Collision with {other.gameObject.tag}");
         switch(other.gameObject.tag.ToLower()){
             case "something":
                 // Do somthing?
@@ -56,7 +70,7 @@ public class PlayerController : MonoBehaviour
                 // Handle Checkpoint
                 break;
             default:
-                Debug.LogWarning($"Unknown Tag collided {other.gameObject.tag}");
+                //Debug.LogWarning($"Unknown Tag collided {other.gameObject.tag}");
                 break;
         }        
     }
@@ -65,22 +79,39 @@ public class PlayerController : MonoBehaviour
         var hDirection = Input.GetAxis("Horizontal");
         var vDirection = Input.GetAxis("Vertical");
 
+        var xVelocity = speed;
+        //Holding Down
+        if((vDirection < 0)){
+            xVelocity = xVelocity / 2;
+            collider2D.size = crouchingPosition;
+        }
+        else{
+            collider2D.size = standingPosition;
+        }
+
         // Moving Left
         if (hDirection < 0)
         {
-            rb.velocity = new Vector2(-speed, rb.velocity.y);
+            rb.velocity = new Vector2(-xVelocity, rb.velocity.y);
             transform.localScale = new Vector2(-1, 1);
         }
         // Moving Right
         else if (hDirection > 0)
         {
-            rb.velocity = new Vector2(speed, rb.velocity.y);
+            rb.velocity = new Vector2(xVelocity, rb.velocity.y);
             transform.localScale = new Vector2(1, 1);            
-        }        
+        }
+
         //Jumping
-        if (Input.GetButtonDown("Jump"))// && collider2D.IsTouchingLayers(ground))
+        if (Input.GetButtonDown("Jump") && collider2D.IsTouchingLayers(ground))
         {
             Jump();   
+        }
+
+        //Action
+        if(Input.GetButtonDown("Fire1"))
+        {
+            //Debug.Log($"Pressing {Input.g}")
         }
     }
 
@@ -88,9 +119,57 @@ public class PlayerController : MonoBehaviour
         // TODO: Future event to go here
     }
 
+    private void AnimationState()
+    {
+        if(state == State.jumping)
+        {
+            if(rb.velocity.y < .1f)
+            {
+                state = State.falling;
+            }
+        }
+        else if(state == State.falling)
+        {
+            if (collider2D.IsTouchingLayers(ground))
+            {
+                state = State.idle;
+            }
+        }
+        else if(state == State.hurt)
+        {
+            if(Mathf.Abs(rb.velocity.x) < .1f)
+            {
+                state = State.idle;
+            }
+        }
+        else if(Mathf.Abs(rb.velocity.x) > 2f)
+        {
+            //Moving
+            state = State.running;
+        }
+        else
+        {
+            state = State.idle;
+        }
+    }
+
     private void Jump()
     {
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         state = State.jumping;
+    }
+
+    private void PickupClue(Collider2D collision){    
+        // Only pick up if button pressed
+        if(Input.GetButtonDown("Fire1")) // Ctrl Left
+        {
+            Debug.Log($"Picked up {collision.tag}");
+            Destroy(collision.gameObject);
+        }        
+    }
+
+    private void PlaySoundFootStep()
+    {
+        footStep.Play();
     }
 }
