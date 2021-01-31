@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - Clue
   - Wall
+  - NPC
   layers:
   - Default
   - TransparentFX
@@ -46,6 +47,27 @@ TagManager:
     locked: 0
   - name: Back
     uniqueID: 2116099231
+    locked: 0
+  - name: NPCBase
+    uniqueID: 2701660941
+    locked: 0
+  - name: NPCEyes
+    uniqueID: 3612840783
+    locked: 0
+  - name: NPCEyebrows
+    uniqueID: 2449245827
+    locked: 0
+  - name: NPCDress
+    uniqueID: 636291141
+    locked: 0
+  - name: NPCHat
+    uniqueID: 3411712665
+    locked: 0
+  - name: NPCBlush
+    uniqueID: 1414041157
+    locked: 0
+  - name: NPCAccessory
+    uniqueID: 3993929403
     locked: 0
   - name: Entity
     uniqueID: 1712463
