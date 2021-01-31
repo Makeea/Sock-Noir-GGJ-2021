@@ -50,6 +50,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log($"trigger entered {collision.tag}");
+        // TODO: probably move clue case (with PickupClue(...)) into class Clue's Update method
         switch (collision.tag.ToLower())
         {
             case "clue":
@@ -59,16 +60,13 @@ public class PlayerController : MonoBehaviour
                 Debug.LogWarning($"Unknown Tag collided collision.tag");
                 break;
         }
+
+        collision.gameObject.SendMessage("SetInteract", true);
     }
 
     void OnTriggerExit2D(Collider2D collider)
     {
         collider.gameObject.SendMessage("SetInteract", false);
-    }
-
-    void OnTriggerStay2D(Collider2D collider)
-    {
-        collider.gameObject.SendMessage("SetInteract", true);
     }
 
     private void OnCollisionEnter2D(Collision2D other)
