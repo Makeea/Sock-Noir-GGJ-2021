@@ -47,4 +47,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tests/PlayerMovementTest2.unity
     guid: 135ee4891301e534e86af298feefa9de
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 1af8fa2a08b8be240a611427e789b767
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: f84534f48e0d9bf4baad5a11c778fc73
+  - enabled: 1
+    path: Assets/Scenes/Tests/NPCGeneratorTest.unity
+    guid: 72aedf3cfa4e3dd4aab551d73d38bd18
   m_configObjects: {}
