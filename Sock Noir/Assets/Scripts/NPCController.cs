@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCController : MonoBehaviour
+public class NPCController : ChatterBox
 {    
     private SpriteRenderer baseSock;
     private SpriteRenderer hat;
@@ -86,10 +86,10 @@ public class NPCController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    // // Update is called once per frame
+    // void Update()
+    // {
         
-    }
+    // }
 }
 
